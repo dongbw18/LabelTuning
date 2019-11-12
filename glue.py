@@ -5,10 +5,10 @@ from torch.utils.data import SequentialSampler,DataLoader,TensorDataset
 CUDA=torch.cuda.is_available()
 
 model_type='bert'
-task_name='mrpc'
+task_name='cola'
 model_name_or_path='bert-base-uncased'
 output_dir='/output/Model_'+model_type+'_on_task_'+task_name+'/'
-data_dir='/data/mrpc/'
+data_dir='/data/cola/'
 batch_size=8
 max_seq_length=128
 
@@ -27,7 +27,7 @@ config=config_class.from_pretrained(model_name_or_path,num_labels=num_labels,fin
 tokenizer=tokenizer_class.from_pretrained(model_name_or_path,do_lower_case=True)
 model=model_class.from_pretrained(model_name_or_path,from_tf=False,config=config)
 if CUDA: mode=model.cuda()
-
+exit()
 '''evaluate(model,tokenizer)'''
 if not os.path.exists(output_dir): os.makedirs(output_dir)
 def load_and_cache_examples(data_dir,cach_name,task_name,tokenizer,max_seq_length,evaluate):
@@ -50,7 +50,7 @@ def load_and_cache_examples(data_dir,cach_name,task_name,tokenizer,max_seq_lengt
 	all_input_ids=torch.tensor([f.input_ids for f in features],dtype=torch.long)
 	all_attention_mask=torch.tensor([f.attention_mask for f in features],dtype=torch.long)
 	all_token_type_ids=torch.tensor([f.token_type_ids for f in features],dtype=torch.long)
-	all_labels=torch.tensor([f.laabel for f in features],dtype=(torch.long if if output_mode=='classification' else torch.float))
+	all_labels=torch.tensor([f.laabel for f in features],dtype=(torch.long if output_mode=='classification' else torch.float))
 	dataset=TensorDataset(all_input_ids,all_attention_mask,all_token_type_ids,all_labels)
 	return dataset
 
@@ -73,8 +73,8 @@ for it in dataloader:
 	loss+=loss_.mean().item()
 	logits.append(logits_)
 	cnt+=1
-loss/=(float)cnt
 
+loss=loss/float(cnt)
 
 
 

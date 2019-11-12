@@ -718,10 +718,13 @@ class BertModel(BertPreTrainedModel):
                                        encoder_hidden_states=encoder_hidden_states,
                                        encoder_attention_mask=encoder_extended_attention_mask)
         sequence_output = encoder_outputs[0]
-        pooled_output = self.pooler(sequence_output)
+        '''pooled_output = self.pooler(sequence_output)
 
         outputs = (sequence_output, pooled_output,) + encoder_outputs[1:]  # add hidden_states and attentions if they are here
-        return outputs  # sequence_output, pooled_output, (hidden_states), (attentions)
+        return outputs  # sequence_output, pooled_output, (hidden_states), (attentions)'''
+        mean_rep = sequence_output * attention_mask.unsqueeze(-1).to(dtype=torch.float)
+        mean_rep = mean_rep.sum(1) / attention_mask.sum(-1).unsqueeze(-1).to(dtype=torch.float)
+        return mean_rep
 
 
 @add_start_docstrings("""Bert Model with two heads on top as done during the pre-training:
@@ -1009,7 +1012,8 @@ class BertForSequenceClassification(BertPreTrainedModel):
                             position_ids=position_ids,
                             head_mask=head_mask,
                             inputs_embeds=inputs_embeds)
-
+        return outputs
+        
         pooled_output = outputs[1]
 
         pooled_output = self.dropout(pooled_output)

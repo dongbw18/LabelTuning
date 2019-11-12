@@ -276,6 +276,26 @@ class ColaProcessor(DataProcessor):
                 InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
         return examples
 
+class FewRelProcessor(DataProcessor):
+    """Processor for the CoLA data set (GLUE version)."""
+
+    def get_dev_examples(self, inputs):
+        """See base class."""
+        return self._create_examples(inputs, "dev")
+
+    def get_labels(self):
+        """See base class."""
+        return ["0", "1"]
+
+    def _create_examples(self, lines, set_type):
+        """Creates examples for the training and dev sets."""
+        examples = []
+        for (i, line) in enumerate(lines):
+            guid = "%s-%s" % (set_type, i)
+            text_a = line
+            examples.append(
+                InputExample(guid=guid, text_a=text_a, text_b=None, label='1'))
+        return examples
 
 class Sst2Processor(DataProcessor):
     """Processor for the SST-2 data set (GLUE version)."""
@@ -515,6 +535,7 @@ class WnliProcessor(DataProcessor):
 
 glue_tasks_num_labels = {
     "cola": 2,
+    "fewrel": 2,
     "mnli": 3,
     "mrpc": 2,
     "sst-2": 2,
@@ -527,6 +548,7 @@ glue_tasks_num_labels = {
 
 glue_processors = {
     "cola": ColaProcessor,
+    "fewrel": FewRelProcessor,
     "mnli": MnliProcessor,
     "mnli-mm": MnliMismatchedProcessor,
     "mrpc": MrpcProcessor,
@@ -540,6 +562,7 @@ glue_processors = {
 
 glue_output_modes = {
     "cola": "classification",
+    "fewrel": "classification",
     "mnli": "classification",
     "mnli-mm": "classification",
     "mrpc": "classification",
