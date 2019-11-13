@@ -2,10 +2,10 @@ import os
 import numpy as np
 import torch
 from torch.utils.data import SequentialSampler,DataLoader,TensorDataset
-from transformers import glue_processors as processors
-from transformers import glue_output_modes as output_modes
-from transformers import glue_convert_examples_to_features as convert_examples_to_features
-from transformers import BertConfig,BertForSequenceClassification,BertTokenizer
+from .transformers import glue_processors as processors
+from .transformers import glue_output_modes as output_modes
+from .transformers import glue_convert_examples_to_features as convert_examples_to_features
+from .transformers import BertConfig,BertForSequenceClassification,BertTokenizer
 
 class BertModel(object):
 	def __init__(self,model_type='bert',task_name='fewrel',model_name_or_path='bert-base-uncased'):
@@ -14,7 +14,7 @@ class BertModel(object):
 		self.model_name_or_path=model_name_or_path
 		#self.output_dir='/output/Model_'+model_type+'_on_task_'+task_name+'/'
 		#self.data_dir='/data/cola/' #'/data/fewrel/'
-		self.batch_size=8
+		self.batch_size=5
 		self.max_seq_length=128
 		self.CUDA=torch.cuda.is_available()
 
