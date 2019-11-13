@@ -10,7 +10,7 @@ from .transformers import BertConfig,BertForSequenceClassification,BertTokenizer
 class BertModel(object):
 	def __init__(self,model_type='bert',task_name='fewrel',model_name_or_path='bert-base-uncased'):
 		self.model_type=model_type
-		self.task_name=task_name #'fewrel'
+		self.task_name=task_name 
 		self.model_name_or_path=model_name_or_path
 		#self.output_dir='/output/Model_'+model_type+'_on_task_'+task_name+'/'
 		#self.data_dir='/data/cola/' #'/data/fewrel/'
@@ -53,6 +53,7 @@ class BertModel(object):
 		dataloader=DataLoader(dataset,sampler=sampler,batch_size=self.batch_size)
 		outputs=[]
 		for it in dataloader:
+			if self.CUDA: it=tuple(t.cuda() for t in it)
 			inputs={
 				'input_ids':it[0],
 				'attention_mask':it[1],
