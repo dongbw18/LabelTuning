@@ -626,7 +626,7 @@ class BertModel(BertPreTrainedModel):
         for layer, heads in heads_to_prune.items():
             self.encoder.layer[layer].attention.prune_heads(heads)
 
-    def forward(self, input_ids=None, attention_mask=None, token_type_ids=None, position_ids=None,
+    def forward(self, MLP ,input_ids=None, attention_mask=None, token_type_ids=None, position_ids=None,
                 head_mask=None, inputs_embeds=None, encoder_hidden_states=None, encoder_attention_mask=None):
         """ Forward pass on the Model.
 
@@ -718,13 +718,39 @@ class BertModel(BertPreTrainedModel):
                                        encoder_hidden_states=encoder_hidden_states,
                                        encoder_attention_mask=encoder_extended_attention_mask)
         sequence_output = encoder_outputs[0]
-        '''pooled_output = self.pooler(sequence_output)
+        if MLP: 
+            mean_rep = sequence_output * attention_mask.unsqueeze(-1).to(dtype=torch.float)
+            mean_rep = mean_rep.sum(1) / attention_mask.sum(-1).unsqueeze(-1).to(dtype=torch.float)
+            return mean_rep
+        else:
+            pooled_output = self.pooler(sequence_output)
+            outputs = (sequence_output, pooled_output,) + encoder_outputs[1:]  # add hidden_states and attentions if they are here
+            return outputs  # sequence_output, pooled_output, (hidden_states), (attentions)
+        '''
+        
 
-        outputs = (sequence_output, pooled_output,) + encoder_outputs[1:]  # add hidden_states and attentions if they are here
-        return outputs  # sequence_output, pooled_output, (hidden_states), (attentions)'''
-        mean_rep = sequence_output * attention_mask.unsqueeze(-1).to(dtype=torch.float)
-        mean_rep = mean_rep.sum(1) / attention_mask.sum(-1).unsqueeze(-1).to(dtype=torch.float)
-        return mean_rep
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        '''
 
 
 @add_start_docstrings("""Bert Model with two heads on top as done during the pre-training:
@@ -1004,7 +1030,7 @@ class BertForSequenceClassification(BertPreTrainedModel):
         self.init_weights()
 
     def forward(self, input_ids=None, attention_mask=None, token_type_ids=None,
-                position_ids=None, head_mask=None, inputs_embeds=None, labels=None):
+                position_ids=None, head_mask=None, inputs_embeds=None, labels=None,MLP=False):
 
         outputs = self.bert(input_ids,
                             attention_mask=attention_mask,
@@ -1012,7 +1038,26 @@ class BertForSequenceClassification(BertPreTrainedModel):
                             position_ids=position_ids,
                             head_mask=head_mask,
                             inputs_embeds=inputs_embeds)
-        return outputs
+        if MLP: return outputs
+        '''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        '''
         
         pooled_output = outputs[1]
 
