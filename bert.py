@@ -59,6 +59,7 @@ class BertModel(object):
 				'attention_mask':it[1],
 				'token_type_ids':it[2],
 				'labels':it[3],
+				'MLP':True,
 			}
 			sequence_output=self.model(**inputs)
 			outputs.append(sequence_output)
